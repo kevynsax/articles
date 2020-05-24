@@ -1,6 +1,6 @@
 ##How to create a Docker for your React Project
 
-The idea here is to use a multiple build step using [node](https://nodejs.org/en/) and [nginx](https://www.nginx.com/) images to build and serve your project
+The idea here is to use a multiple build step using [node](https://nodejs.org/en/) image to create an optimized build and [nginx](https://www.nginx.com/) image to serve the build of your project
 
 Here are the steps to create our Docker container with our React project
 
