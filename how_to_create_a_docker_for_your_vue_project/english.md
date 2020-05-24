@@ -67,7 +67,7 @@ copying all the files from our project(my-project) to the folder inside the cont
 running install in our missing dependencies, using silent to not show warnings
  
 `RUN npm run build`<br/>
-building our project, in this step will be created the folder `./build`
+building our project, in this step will be created the folder `./dist`
  
 `FROM nginx:alpine`<br/>
 Here we are creating the final container, using nginx to serve our project

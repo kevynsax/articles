@@ -73,7 +73,7 @@ mundando para a pasta '/app' onde iremos aplicar os próximos comandos
  executando o install nas dependências que estão faltando, usando silent para não mostrar nenhum warning
  
  `RUN npm run build`<br/>
-construindo nosso projeto, nesse step será criado a pasta `./build`
+construindo nosso projeto, nesse step será criado a pasta `./dist`
  
  `FROM nginx:alpine`<br/>
 Aqui estamos criando o container final, usando o nginx para servir o nosso projeto buildado.
