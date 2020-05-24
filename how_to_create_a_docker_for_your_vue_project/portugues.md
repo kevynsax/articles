@@ -1,20 +1,19 @@
-##Como criar um Docker para o seu projeto React
+##Como criar um Docker para o seu projeto Vue
 
-A idéia aqui é criar um multiplo steps build utilizando as imagens do [node](https://nodejs.org/en/) e [nginx](https://www.nginx.com/) para construir e servir o seu projeto.
+Nosso objetivo aqui é minimizar o uso de disco e ter uma maior perfomance no uso do app.
+Então iremos criar um multiplo step build utilizando as imagens do [node](https://nodejs.org/en/) e [nginx](https://www.nginx.com/) para construir e servir o seu projeto.
 
-Aqui estão os passos para criar o container com o nosso projeto React dentro  
-
-Primeiro iremos criar um projeto usando o [create-react-app](https://github.com/facebook/create-react-app): <br />
+Primeiro iremos criar um projeto usando o [Vue cli](https://cli.vuejs.org/guide/installation.html)<br/>
 No terminal(linux ou mac) ou Powershell(windows)
 
 ```
-npx create-react-app meu-projeto
-cd meu-projeto
-```
+vue create my-project -d
+cd my-project
+``` 
 
 Para ver o projeto rodando você pode executar:
 ```
-npm start
+npm run serve
 ```
 
 Agora iremos criar o arquivo com o nome "Dockerfile" <br/>
@@ -38,7 +37,7 @@ RUN npm install --silent
 RUN npm run build
 
 FROM nginx:alpine
-COPY --from=construcao /app/build /usr/share/nginx/html
+COPY --from=construcao /app/dist /usr/share/nginx/html
 EXPOSE 80
 ```
 
@@ -46,10 +45,10 @@ Para testar se o seu Dockerfile está correto você pode rodar
 
 ```
 docker build -t imagem-meu-projeto .
-docker run --name container-meu-projeto -d -p 3000:80 imagem-meu-projeto
+docker run --name container-meu-projeto -d -p 8080:80 imagem-meu-projeto
 ```
 
-Então poderá abrir o browser na url http://localhost:3000 e ver o seu projeto rodando
+Então poderá abrir o browser na url http://localhost:8080 e ver o seu projeto rodando
 
 
 Para ver as configurações do seu container docker rodando você pode executar:
@@ -79,8 +78,8 @@ construindo nosso projeto, nesse step será criado a pasta `./build`
  `FROM nginx:alpine`<br/>
 Aqui estamos criando o container final, usando o nginx para servir o nosso projeto buildado.
  
- `COPY --from=construcao /app/build /usr/share/nginx/html`<br/>
-copiando a pasta build do step de construção(que nós chamamos de contrucao) para pasta padrão do nginx('/usr/share/nginx/html')
+ `COPY --from=construcao /app/dist /usr/share/nginx/html`<br/>
+copiando a pasta dist do step de construção(que nós chamamos de contrucao) para pasta padrão do nginx('/usr/share/nginx/html')
 
 `EXPOSE 80`<br/>
 Vamos tornar explicito que nosso container irá expor a porta 80
@@ -90,7 +89,7 @@ Vamos tornar explicito que nosso container irá expor a porta 80
 
 ####Rotas
 
-Se você for utilizar **rotas** como o [react-router-dom](https://reacttraining.com/react-router/web/guides/quick-start) precisaremos criar um arquivo de configuracão do Nginx, porque o arquivo default não funcionará
+Se você for utilizar **rotas** precisaremos criar um arquivo de configuracão do Nginx, se um usuário acessar diretamente uma url de uma rota não principal, nginx não saberá lidar com a requisição.
 
 Aqui estão os passos para criar um arquivo de configuração para o Nginx
 
@@ -141,7 +140,7 @@ RUN npm install --silent
 RUN npm run build
 
 FROM nginx:alpine
-COPY --from=construcao /app/build /usr/share/nginx/html
+COPY --from=construcao /app/dist /usr/share/nginx/html
 
 #A proxima linha é a que copiará o arquivo do nginx para o local correto 
 COPY ./nginx.conf /etc/nginx/nginx.conf
