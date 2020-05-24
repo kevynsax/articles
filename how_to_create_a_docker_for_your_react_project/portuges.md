@@ -150,7 +150,7 @@ EXPOSE 80
 ```
 
 Para testar se tudo foi configurado corretamente você pode rodar novamente<br/>
-*lembre-se de parar o container, para depois roda-lo novamente*
+*lembre-se de parar e remover o container, para depois roda-lo novamente*
 ```
 docker build -t imagem-meu-projeto .
 docker run --name container-meu-projeto -d -p 3000:80 imagem-meu-projeto

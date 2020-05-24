@@ -146,7 +146,7 @@ EXPOSE 80
 ```
 
 To test if all configurations were done right, you can run<br/>
-*remember to stop the container before you run again*
+*remember to stop and remove the container before you run again*
 ```
 docker build -t my-project-image .
 docker run --name my-project-container -d -p 3000:80 my-project-image
