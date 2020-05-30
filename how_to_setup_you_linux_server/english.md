@@ -36,7 +36,7 @@ cat ~/.ssh/id_rsa.pub
 And then we can add the ssh key on digital ocean 
 ![Adding our ssh key](https://kevyn.com.br/links/setting-up-server/adding-ssh-key.png)
 
-And finally we can finish creating our server
+And finally we can choose the name of the server and finish the creation of our server
 ![finish create the server](https://kevyn.com.br/links/setting-up-server/finish-creating-server.png)
 
 When the digital ocean finishes to create your server he will define the ip of your server, this is the one that we will use for everything
@@ -68,7 +68,7 @@ sudo apt upgrade
 ```
 
 ###Swapfile
-This server have not much memory(1gbr) so is wise to create a swapfile.
+This server have not much memory(1gb) so is wise to create a swapfile.
 This file will be used by debian to use disk when the system memory is full.
 
 So let's create the swapfile
@@ -80,11 +80,11 @@ sudo swapon /swapfile
 free -h
 ```
  
-you should see some output like
+you should see some output like<br/>
 ![status swapfile](https://kevyn.com.br/links/setting-up-server/make-swapfile.png)
  
 ###Docker
-All of my projects I use docker which makes much more easier to migrate server publish into another place. 
+All of my projects I use docker which makes much more easier to migrate my apps into another place. 
 
 So let's install the docker.
 
@@ -111,19 +111,21 @@ sudo add-apt-repository \
 ```
 And finally we can install the docker
 ```
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
 ```
 
 Now we can test if the docker is working
 ```
 docker run hello-world
 ```
-If you get an output like
+If you get an output like this, everything it's ok<br/>
 ![docker hello world](https://kevyn.com.br/links/setting-up-server/hello-world-docker.png)
 
 To run docker without sudo or using another users, which is true in the server, you will need to add the user to the docker group
-`sudo usermod -aG docker $USER `
+```
+sudo usermod -aG docker $USER 
+```
 
 ###User
 Is recommended to not use root user for every operation, living only major changes to the root user.
@@ -133,7 +135,7 @@ So we going to create a new user on this server that will have permission to clo
 sudo useradd -m -g docker kevyn
 ```
 
-to use ssh on this user we need to copy the authorized_keys to the home folder of the new user
+to use ssh on this user we need to copy the authorized_keys from the home folder to the new user
 ```
 mkdir /home/kevyn/.ssh
 cp /root/.ssh/authorized_keys /home/kevyn/.ssh/
@@ -151,8 +153,8 @@ ssh kevyn@192.81.212.164
 I like to create a folder where I can put all my source code inside.
 So let's create a folder and clone my resume project
 ```
-mkdir /media/sourceCode
-cd /media/sourceCode
+mkdir ~/sourceCode
+cd ~/sourceCode
 git clone https://github.com/kevynsax/resume.git 
 cd resume
 ```
