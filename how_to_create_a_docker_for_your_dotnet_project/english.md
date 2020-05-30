@@ -152,4 +152,4 @@ everything that we need was to run the tests before publishing and defining the 
 ###Conclusion
 
 To better manage disk space we use the self-container strategy and the alpine distro.<br/>
-To make sure our environment and build will work we run the test inside the docker within the same version that will be used to publish.
+To make sure our environment and build will work we run the tesest inside the docker within the same version that will be used to publish.
