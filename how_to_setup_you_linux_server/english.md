@@ -139,7 +139,7 @@ to use ssh on this user we need to copy the authorized_keys from the home folder
 ```
 mkdir /home/kevyn/.ssh
 cp /root/.ssh/authorized_keys /home/kevyn/.ssh/
-sudo chown kevyn /home/kevyn/.ssh/authorized_keys
+sudo chown -R kevyn /home/kevyn/.ssh
 ```
 
 now we can disconnect from root user and connect using `kevyn` user
@@ -171,10 +171,11 @@ And then you can test opening your browser on the url http://192.81.212.164
 
 ####Domain
 To use a domain to point to your server you will need to create an `a` entry with the value of your ip server, in this case: `192.81.212.164`<br/>
-Using my domain server(godaddy.com) he looks like this
+Using my domain server(godaddy.com) looks like this
 ![Domain GoDaddy](https://kevyn.com.br/links/setting-up-server/domain.png)
 
-So you can run your website using http://kevyn.com.br
+So you can run your website using http://kevyn.com.br <br/>
+If want to run your website with `www` remember to add a CNAME with the key www and the value `@` or `.` or `domain.com`
 
 ####HTTPS - SSL
 Every web site should be running under https protocol, so one group came together and provided one solution for this.
