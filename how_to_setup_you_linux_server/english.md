@@ -170,7 +170,7 @@ And then you can test opening your browser on the url http://192.81.212.164
 ###Advanced
 
 ####Domain
-To use a domain to point to your server you will need to create an `a` entry with the value of your server, in this case: `192.81.212.164`<br/>
+To use a domain to point to your server you will need to create an `a` entry with the value of your ip server, in this case: `192.81.212.164`<br/>
 Using my domain server(godaddy.com) he looks like this
 ![Domain GoDaddy](https://kevyn.com.br/links/setting-up-server/domain.png)
 
@@ -182,10 +182,110 @@ These organization is called [Let's Encrypt](https://letsencrypt.org) they provi
 
 Using root account we are going to install in our server the ssl to respond any request as https
 
-First we need to stop any docker that are using the 80 port
+First we need to stop any docker that are using the 80 port or 443 port
 ```
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
 ```
 
- 
+We can create a volume to save the nginx and letsencrypt configs
+```
+docker volume create config
+```
+
+Then lets create a docker just to install inside[certbot](https://certbot.eff.org/) which will create the certificate for us
+```
+docker run --name certbot -p 80:80 -p 443:443 -v config:/etc/nginx -v config:/etc/letsencrypt -it debian bash
+``` 
+
+**Inside this container** we will need to install the certbot, so let's do it
+
+First the dependencies
+```
+apt update
+apt install python software-properties-common gnupg 
+```
+Then lets add the repository
+```
+add-apt-repository ppa:certbot/certbot
+```
+**sometimes gives a message of error, on the thread but you can follow the next steps*
+
+```
+apt update
+apt install python-certbot-nginx
+```
+
+Finally we can obtain our certificate
+```
+certbot --nginx -d example.com -d www.example.com -d example2.com -d www.example2.com
+```
+
+You should see some output like this ones:<br/>
+![certbot creation](https://kevyn.com.br/links/setting-up-server/create-certbot-first.png)
+![certbot creation](https://kevyn.com.br/links/setting-up-server/create-certbot-second.png)
+
+Then we can exit the certbot container and create a nginx container to respond for every request of our server
+```
+exit
+```
+
+####Nginx
+
+To run more than one app in the same server you will have to have an application to manage all requests.<br />
+Here I decided to use nginx he will redirect all requests.
+
+First we will create a network to put all container that will need to be exposed to outside world
+```
+docker network create br0
+```
+
+And re-run the resume container to expose him under https protocol
+```
+docker rm resume
+docker -d --name resume --network br0 kevyn-resume
+``` 
+ps: we don't need to expose his port since that nginx will do that for us.
+
+So lets create a Nginx docker using the already created config
+
+***Important: this configs must be done by the `root` user***
+```
+docker run --name nginx --network br0 -p 80:80 -p 443:443 -v config:/etc/nginx -v config:/etc/letsencrypt -it nginx bash 
+```
+
+we will need to edit the file `/etc/nginx/sites-enabled/default`
+```
+apt update 
+apt install nano
+nano /etc/nginx/sites-enabled/default
+```
+
+and the file: `/etc/nginx/sites-enabled/default` should look something like this:
+```
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen [::]:443 ssl ipv6only=on;
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_revert http://resume/;
+    }
+}
+```
+where `example.com` should be your domain
+
+then we can reload nginx config
+```
+nginx -s reload
+```
