@@ -129,7 +129,7 @@ sudo usermod -aG docker $USER
 
 ###User
 Is recommended to not use root user for every operation, living only major changes to the root user.
-So we going to create a new user on this server that will have permission to clone projects on the folder `/media/sourceCode` and run docker commands.
+So we going to create a new user that will run docker commands.
 
 ```
 sudo useradd -m -g docker kevyn
@@ -290,3 +290,21 @@ then we can reload nginx config
 ```
 nginx -s reload
 ```
+Now you can test your website and should redirect to the https version
+
+####SSH
+Disable root login. You should always avoid use root login so you should disable it. And for any reason you want to use the root login you can login into Digital Ocean dashboard and open a console to use the root login inside their platform 
+
+Edit the file of ssh config and disable root login
+```
+nano /etc/ssh/sshd_config
+```
+
+change the line that enable root login
+```
+PermitRootLogin no
+```
+
+###Conclusion
+
+This is the steps that I take to setup my server. So if you have any thing to add I will be glad to know. 
