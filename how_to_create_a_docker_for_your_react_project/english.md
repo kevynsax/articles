@@ -146,8 +146,116 @@ EXPOSE 80
 ```
 
 To test if all configurations were done right, you can run<br/>
-*remember to stop and remove the container before you run again*
+***remember to stop and remove the container before you run again***
 ```
 docker build -t my-project-image .
 docker run --name my-project-container -d -p 3000:80 my-project-image
+```
+
+####Base Url
+
+Sometimes we want to run our application not on the root of our domain e.g. `http://kevynklava.com/resume/` for this we going to have change the nginx.conf file and the Dockerfile.
+
+The nginx.conf will look like this:
+
+```
+user nginx;
+worker_processes auto;
+
+error_log   /var/log/nginx/error.log warn;
+pid         /var/run/nginx.pid;
+
+events {
+    worker_connections    1024;
+}
+
+http {
+    include    /etc/nginx/mime.types;
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location /resume/ {
+            root /usr/share/nginx/html;
+            try_files $uri /index.html;
+        }
+    }
+} 
+```
+
+and we have to tell the React project that he will be running with same base url, to do that we will add an Environment variable on the build stage<br/>
+Your Dockerfile will look like:
+
+```dockerfile
+FROM node:alpine as build
+WORKDIR /app
+COPY . .
+
+# Next line will put the base href on index.html as '/still-have-time'
+ENV PUBLIC_URL=/still-have-time
+
+RUN npm install --silent
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+```
+
+####Base Url + Routes
+If you will use routes and have a base url we goint to need do both previous steps and change our routes
+
+So your nginx.conf will look like this:
+
+```
+user nginx;
+worker_processes auto;
+
+error_log   /var/log/nginx/error.log warn;
+pid         /var/run/nginx.pid;
+
+events {
+    worker_connections    1024;
+}
+
+http {
+    include    /etc/nginx/mime.types;
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location /resume/ {
+            root /usr/share/nginx/html;
+            try_files $uri /index.html;
+        }
+    }
+} 
+``` 
+
+Your Dockerfile
+```dockerfile
+FROM node:alpine as build
+WORKDIR /app
+COPY . .
+
+# Next line will put the base href on index.html as '/still-have-time'
+ENV PUBLIC_URL=/still-have-time
+
+RUN npm install --silent
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+```
+
+And on your app where you use the `react-router-dom` you will need to change the router
+```jsx harmony
+<Router basename="/resume">
+    <Switch>
+        <Route component={HomeComponent} />
+    </Switch>
+</Router>
 ```
