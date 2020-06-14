@@ -154,7 +154,7 @@ docker run --name my-project-container -d -p 3000:80 my-project-image
 
 ####Base Url
 
-Sometimes we want to run our application not on the root of our domain e.g. `http://kevynklava.com/resume/` for this we going to have change the nginx.conf file and the Dockerfile.
+Sometimes we want to run our application not on the root of our domain e.g. `http://kevynklava.com/my-project/` for this we going to have change the nginx.conf file and the Dockerfile.
 
 The nginx.conf will look like this:
 
@@ -175,7 +175,7 @@ http {
         listen       80;
         server_name  localhost;
 
-        location /resume/ {
+        location /my-project/ {
             root /usr/share/nginx/html;
             try_files $uri /index.html;
         }
@@ -192,7 +192,7 @@ WORKDIR /app
 COPY . .
 
 # Next line will put the base href on index.html as '/still-have-time'
-ENV PUBLIC_URL=/still-have-time
+ENV PUBLIC_URL=/my-project
 
 RUN npm install --silent
 RUN npm run build
@@ -240,7 +240,7 @@ WORKDIR /app
 COPY . .
 
 # Next line will put the base href on index.html as '/still-have-time'
-ENV PUBLIC_URL=/still-have-time
+ENV PUBLIC_URL=/resume
 
 RUN npm install --silent
 RUN npm run build
