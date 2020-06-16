@@ -188,7 +188,7 @@ FROM node:alpine as build
 WORKDIR /app
 COPY . .
 RUN npm install --silent
-RUN npx ng build --prod --base-href /my-project/
+RUN npx ng build --output-path ./dist --prod --base-href /my-project/
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
