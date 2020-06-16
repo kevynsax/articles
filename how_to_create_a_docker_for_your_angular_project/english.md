@@ -180,19 +180,17 @@ http {
 } 
 ```
 
-and we have to tell the React project that he will be running with same base url, to do that we will add an Environment variable on the build stage<br/>
+and we have to tell the Angular build project that he will be running with same base url, to do that we will add an Environment variable on the build stage<br/>
 Your Dockerfile will look like:
 
 ```dockerfile
 FROM node:alpine as build
 WORKDIR /app
 COPY . .
-
 RUN npm install --silent
 RUN npx ng build --prod --base-href /my-project/
 
 FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-
+COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 ```
